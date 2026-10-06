@@ -44,7 +44,7 @@ app.get("/webhook", function (req, res) {
 // Handle incoming messages
 app.post('/webhook', (req, res) => {
   console.log(req.body);
-
+  const timestamp = new Date().toISOString().replace('T', ' ').slice(0, 19);
   console.log(`\n\nWebhook received ${timestamp} You know\n`);
 
   if (req.body.object === "whatsapp_business_account") {
