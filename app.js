@@ -45,6 +45,8 @@ app.get("/webhook", function (req, res) {
 app.post('/webhook', (req, res) => {
   console.log(req.body);
 
+  console.log(`\n\nWebhook received ${timestamp} You know\n`);
+
   if (req.body.object === "whatsapp_business_account") {
     req.body.entry.forEach(entry => {
       entry.changes.forEach(change => {
