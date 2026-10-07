@@ -21,16 +21,12 @@ client.on('error', (err) => {
   console.error('Redis Client Error', err);
 });
 
-// Iniciamos la conexión de forma segura
-(async () => {
-    try {
-        console.log('✅ ¡Antes de Conectar a Redis!');
-        await client.connect();
-        console.log('✅ ¡Conexión exitosa a la base de datos Key Value de Render!');
-    } catch (err) {
-        console.error('❌ No se pudo conectar a Redis en Render:', err.message);
-    }
-})();
+// En las versiones de Redis que maneja Jasper, el connect se ejecuta directo en el hilo principal
+client.connect().then(() => {
+  console.log('✅ ¡Conexión exitosa a la base de datos Key Value de Render!');
+}).catch((err) => {
+  console.error('❌ Error al conectar Redis:', err.message);
+});
 
 module.exports = class Cache {
     static async insert(key) {
