@@ -106,7 +106,8 @@ module.exports = class Conversation {
           senderPhoneNumberId,
           message.senderPhoneNumber
         );
-        //await markMessageForFollowUp(interactiveMediaResponse.messages[0].id);
+        console.log('✅ ¡Antes de llamar a markMessageForFollowUp!');
+        await markMessageForFollowUp(interactiveMediaResponse.messages[0].id);
         break;
       case constants.REPLY_MEDIA_CAROUSEL_ID:
         let mediaCarouselResponse = await sendMediaCarouselMessage(

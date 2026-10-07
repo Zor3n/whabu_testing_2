@@ -21,6 +21,7 @@ client.on('error', (err) => {
 // Iniciamos la conexión de forma segura
 (async () => {
     try {
+        console.log('✅ ¡Antes de Conectar a Redis!');
         await client.connect();
         console.log('✅ ¡Conexión exitosa a la base de datos Key Value de Render!');
     } catch (err) {
