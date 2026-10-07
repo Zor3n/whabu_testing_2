@@ -107,6 +107,13 @@ function verifyRequestSignature(req, res, buf) {
   }
 }
 
+process.on('uncaughtException', (err) => {
+  console.error('Se detuvo un crash del SDK de Meta:', err.message);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Se detuvo una promesa rechazada:', reason);
+});
 
 var listener = app.listen(config.port, () => {
   console.log(`The app is listening on port ${listener.address().port}`);

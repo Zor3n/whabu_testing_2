@@ -25,8 +25,26 @@ module.exports = class GraphApi {
         ? process.env.PHONE_NUMBER_ID 
         : senderPhoneNumberId;
 
-      // Mark as read and send typing indicator
-      if (messageId) {
+      // Mark as read and send typing indicator - CODE BY APP
+      /*if (messageId) {
+        const typingBody = {
+          messaging_product: "whatsapp",
+          status: "read",
+          message_id: messageId,
+          "typing_indicator": {
+            "type": "text"
+          }
+        };
+
+        await api.call(
+          'POST',
+          [`${activePhoneId}`, 'messages'],
+          typingBody
+        );
+      }*/
+      
+      // MODIFICACIÓN: Si el messageId es el del simulador ("ABGGFlA5Fpa"), saltamos el "marcar como leído"
+      if (messageId && messageId !== "ABGGFlA5Fpa") {
         const typingBody = {
           messaging_product: "whatsapp",
           status: "read",
@@ -43,7 +61,8 @@ module.exports = class GraphApi {
         );
       }
 
-
+      // Si el requestBody contiene un objeto interactive o media con placeholders falsos, 
+      // Meta podría fallar. Por ahora, dejamos que intente enviar el cuerpo del mensaje:
       const response = await api.call(
         'POST',
         [`${activePhoneId}`, 'messages'],
