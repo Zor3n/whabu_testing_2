@@ -44,27 +44,7 @@ app.get("/webhook", function (req, res) {
 
 // Handle incoming messages
 app.post('/webhook', (req, res) => {
-  console.log("\n================================================");
-  console.log("📢 ¡LLEGÓ UN COMANZAZO DESDE UN CELULAR REAL!");
-  console.log("================================================");
-  
-  // Esto va a imprimir en Render todo el paquete de datos que generó tu teléfono
-  console.log("📦 DATOS RECIBIDOS:", JSON.stringify(req.body, null, 2));
-
-  try {
-    // Buscamos el texto exacto que tú escribiste en la pantalla de tu WhatsApp
-    const mensajeDeTuCelular = req.body.entry[0].changes[0].value.messages[0].text.body;
-    const tuNumero = req.body.entry[0].changes[0].value.messages[0].from;
-    
-    console.log(`\n💬 EL MENSAJE QUE ESCRIBISTE FUE: "${mensajeDeTuCelular}"`);
-    console.log(`📱 ENVIADO DESDE EL NÚMERO: ${tuNumero}\n`);
-  } catch (e) {
-    console.log("ℹ️ Llegó un paquete de Meta, pero parece ser un reporte de entrega o lectura.");
-  }
-
-  // Le respondemos rápido a Meta para que marque el segundo check gris en tu celular
-  res.status(200).send('EVENT_RECEIVED');
-  /*console.log(req.body);
+  console.log(req.body);
   const timestamp = new Date().toISOString().replace('T', ' ').slice(0, 19);
   console.log(`\n\nWebhook received ${timestamp} You know\n`);
 
@@ -93,7 +73,7 @@ app.post('/webhook', (req, res) => {
     });
   }
 
-  res.status(200).send('EVENT_RECEIVED');*/
+  res.status(200).send('EVENT_RECEIVED');
 });
 
 // Default route for health check
