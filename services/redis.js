@@ -11,17 +11,22 @@ const redis = require('redis');
 const config = require('./config');
 
 const client = redis.createClient({
-  socket: {
-    host: config.redisHost,
-    port: config.redisPort
-  }
+  url: config.redisUrl, // <-- 1. Se añade para que la URL de Redis se lea desde la variable de entorno REDIS_URL
 });
 
 client.on('error', (err) => {
   console.error('Redis Client Error', err);
 });
 
-client.connect();
+// Iniciamos la conexión de forma segura
+(async () => {
+    try {
+        await client.connect();
+        console.log('✅ ¡Conexión exitosa a la base de datos Key Value de Render!');
+    } catch (err) {
+        console.error('❌ No se pudo conectar a Redis en Render:', err.message);
+    }
+})();
 
 module.exports = class Cache {
     static async insert(key) {
