@@ -20,45 +20,37 @@ const api = new FacebookAdsApi(config.accessToken);
 module.exports = class GraphApi {
   static async #makeApiCall(messageId, senderPhoneNumberId, requestBody) {
     try {
-      // TRUCO: Si el simulador de Meta manda el ID falso, usamos tu variable real de Render
+      // 1. Definimos el ID del teléfono activo (usa tu variable real de Render si viene vacío o de pruebas)
       const activePhoneId = senderPhoneNumberId === "123456123" || !senderPhoneNumberId
         ? process.env.PHONE_NUMBER_ID 
         : senderPhoneNumberId;
 
-      // Mark as read and send typing indicator - CODE BY APP
-      /*if (messageId) {
-        const typingBody = {
-          messaging_product: "whatsapp",
-          status: "read",
-          message_id: messageId,
-          "typing_indicator": {
-            "type": "text"
-          }
-        };
+      // 2. DETECTOR DE SIMULADOR: Si los datos de Meta son ficticios, cortamos el flujo externo
+      const esSimulador = 
+        senderPhoneNumberId === "123456123" || 
+        !senderPhoneNumberId || 
+        (requestBody && (requestBody.to === "16315551181" || requestBody.to === "15551234567"));
 
-        await api.call(
-          'POST',
-          [`${activePhoneId}`, 'messages'],
-          typingBody
-        );
-      }*/
-      
-      // MODIFICACIÓN: Si el messageId es el del simulador ("ABGGFlA5Fpa"), saltamos el "marcar como leído"
+      if (esSimulador) {
+        console.log('\n--- SIMULACIÓN DETECTADA EN WEBHOOK ---');
+        console.log('Datos recibidos y procesados internamente:', JSON.stringify(requestBody, null, 2));
+        console.log('----------------------------------------\n');
+        
+        return { message: "Simulated API call successful for local testing", status: 200 };
+      }
+
+      // -------------------------------------------------------------
+      // FLUJO REAL: Solo se ejecuta si te escriben desde un WhatsApp de verdad
+      // -------------------------------------------------------------
       if (messageId && messageId !== "ABGGFlA5Fpa") {
         const typingBody = {
           messaging_product: "whatsapp",
           status: "read",
           message_id: messageId,
-          "typing_indicator": {
-            "type": "text"
-          }
+          "typing_indicator": { "type": "text" }
         };
-
-        await api.call(
-          'POST',
-          [`${activePhoneId}`, 'messages'],
-          typingBody
-        );
+        // Usamos la variable activePhoneId que declaramos arriba
+        await api.call('POST', [`${activePhoneId}`, 'messages'], typingBody);
       }
 
       // Si el requestBody contiene un objeto interactive o media con placeholders falsos, 
