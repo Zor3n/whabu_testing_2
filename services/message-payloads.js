@@ -144,7 +144,7 @@ function buildMediaCardCarouselPayload(options) {
                 parameters: [
                   {
                     type: "text",
-                    text: ""     // Se deja vacío porque la URL en Meta es 100% estática y no dinámica
+                    text: "get_delivery"     // Se deja vacío porque la URL en Meta es 100% estática y no dinámica
                   }
                 ]
               }
