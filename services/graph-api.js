@@ -117,4 +117,19 @@ module.exports = class GraphApi {
     return this.#makeApiCall(messageId, senderPhoneNumberId, requestBody);
   }
 
+  // NUEVO MÉTODO IMPLEMENTADO PARA ENVIAR TEXTO PLANO SEGURO
+  static async sendSimpleTextMessage(messageId, senderPhoneNumberId, recipientPhoneNumber, textBody) {
+    const requestBody = {
+      messaging_product: "whatsapp",
+      recipient_type: "individual",
+      to: recipientPhoneNumber,
+      type: "text",
+      text: {
+        body: textBody
+      }
+    };
+
+    return this.#makeApiCall(messageId, senderPhoneNumberId, requestBody);
+  }
+
 };

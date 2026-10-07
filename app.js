@@ -115,14 +115,14 @@ process.on('unhandledRejection', (reason, promise) => {
   console.error('Se detuvo una promesa rechazada:', reason);
 });
 
-// COMPROBACIÓN DE VARIABLES DE ENTORNO EN RENDER
+/*// COMPROBACIÓN DE VARIABLES DE ENTORNO EN RENDER
 console.log("=== COMPROBANDO VARIABLES DE ENTORNO EN RENDER ===");
 console.log("ACCESS_TOKEN:", process.env.ACCESS_TOKEN ? "✅ Cargado (Tiene texto)" : "❌ VACÍO O NO EXISTE");
 console.log("VERIFY_TOKEN:", process.env.VERIFY_TOKEN ? `✅ Cargado (${process.env.VERIFY_TOKEN})` : "❌ VACÍO");
 console.log("PHONE_NUMBER_ID:", process.env.PHONE_NUMBER_ID ? `✅ Cargado (${process.env.PHONE_NUMBER_ID})` : "❌ VACÍO");
 console.log("REDIS_HOST:", process.env.REDIS_HOST ? `✅ Cargado (${process.env.REDIS_HOST})` : "❌ VACÍO");
 console.log("REDIS_PORT:", process.env.REDIS_PORT ? `✅ Cargado (${process.env.REDIS_PORT})` : "❌ VACÍO");
-console.log("==================================================");
+console.log("==================================================");*/
 
 var listener = app.listen(config.port, () => {
   console.log(`The app is listening on port ${listener.address().port}`);
