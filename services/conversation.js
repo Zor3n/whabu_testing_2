@@ -45,7 +45,8 @@ function sendInteractiveMediaMessage(messageId, senderPhoneNumberId, recipientPh
     senderPhoneNumberId,
     recipientPhoneNumber,
     {
-      templateName: "grocery_delivery_utility",
+      //templateName: "grocery_delivery_utility",
+      templateName: "jaspers_market_image_cta_v1", // <-- 1. Se mantiene el nombre del template original
       locale: "en_US",
       imageId: config.groceriesMediaId,
     }
@@ -58,9 +59,8 @@ function sendLimitedTimeOfferMessage(messageId, senderPhoneNumberId, recipientPh
     senderPhoneNumberId,
     recipientPhoneNumber,
     {
-      templateName: "strawberries_limited_offer",
+      templateName: "jaspers_market_order_confirmation_v1",
       locale: "en_US",
-      imageId: null,
       imageId: config.strawberriesMediaId,
       offerCode: "BERRIES20",
     }
@@ -73,7 +73,8 @@ function sendMediaCarouselMessage(messageId, senderPhoneNumberId, recipientPhone
     senderPhoneNumberId,
     recipientPhoneNumber,
     {
-      templateName: "recipe_media_carousel",
+      //templateName: "recipe_media_carousel",
+      templateName: "jaspers_market_media_carousel_v1", // <-- 1. Se mantiene el nombre del template original
       locale: "en_US",
       imageIds: [
         config.sheetPanDinnerMediaId,
