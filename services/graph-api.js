@@ -19,52 +19,47 @@ const api = new FacebookAdsApi(config.accessToken);
 
 module.exports = class GraphApi {
   static async #makeApiCall(messageId, senderPhoneNumberId, requestBody) {
-    try {
-      // 1. Definimos el ID del teléfono activo (usa tu variable real de Render si viene vacío o de pruebas)
-      const activePhoneId = senderPhoneNumberId === "123456123" || !senderPhoneNumberId
-        ? process.env.PHONE_NUMBER_ID 
-        : senderPhoneNumberId;
-
-      // 2. DETECTOR DE SIMULADOR: Si los datos de Meta son ficticios, cortamos el flujo externo
-      const esSimulador = 
-        senderPhoneNumberId === "123456123" || 
-        !senderPhoneNumberId || 
-        (requestBody && (requestBody.to === "16315551181" || requestBody.to === "15551234567"));
-
-      if (esSimulador) {
-        console.log('\n--- SIMULACIÓN DETECTADA EN WEBHOOK ---');
-        console.log('Datos recibidos y procesados internamente:', JSON.stringify(requestBody, null, 2));
-        console.log('----------------------------------------\n');
-        
-        return { message: "Simulated API call successful for local testing", status: 200 };
-      }
-
-      // -------------------------------------------------------------
-      // FLUJO REAL: Solo se ejecuta si te escriben desde un WhatsApp de verdad
-      // -------------------------------------------------------------
-      if (messageId && messageId !== "ABGGFlA5Fpa") {
+    // 1. INTENTO DE MARCAR COMO LEÍDO (Protegido contra IDs falsos)
+    if (messageId && messageId !== "ABGGFlA5Fpa") {
+      try {
         const typingBody = {
           messaging_product: "whatsapp",
           status: "read",
           message_id: messageId,
-          "typing_indicator": { "type": "text" }
+          "typing_indicator": {
+            "type": "text"
+          }
         };
-        // Usamos la variable activePhoneId que declaramos arriba
-        await api.call('POST', [`${activePhoneId}`, 'messages'], typingBody);
-      }
 
-      // Si el requestBody contiene un objeto interactive o media con placeholders falsos, 
-      // Meta podría fallar. Por ahora, dejamos que intente enviar el cuerpo del mensaje:
+        await api.call(
+          'POST',
+          [`${senderPhoneNumberId}`, 'messages'],
+          typingBody
+        );
+      } catch (typingError) {
+        // Si el messageId o el ID de teléfono son falsos del simulador, el error se atrapa aquí y el servidor NO se cae
+        console.warn(`[Aviso] No se pudo marcar como leído el mensaje ${messageId}. Detalle: ${typingError.message}`);
+      }
+    }
+
+    // 2. INTENTO DE ENVIAR RESPUESTA AUTOMÁTICA (Protegido contra IDs falsos)
+    try {
+      // Se realiza la llamada con la estructura limpia y nativa de Jasper utilizando el parámetro puro
       const response = await api.call(
         'POST',
-        [`${activePhoneId}`, 'messages'],
+        [`${senderPhoneNumberId}`, 'messages'],
         requestBody
       );
+      
+      // Mantenemos el log original de éxito de la aplicación de Meta
       console.log('API call successful:', response);
       return response;
     } catch (error) {
+      // Si la API de Meta rechaza el envío por datos falsos cruzados del simulador, se atrapa el error aquí
       console.error('Error making API call:', error);
-      throw error;
+      
+      // Retornamos un objeto de fallo simulado para que el flujo de Jasper termine de procesarse sin colapsar el hilo de Render
+      return { error: true, message: error.message };
     }
   }
 
