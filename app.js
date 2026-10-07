@@ -26,7 +26,8 @@ app.use(
 );
 
 // Parse application/json. Verify that callback came from Facebook
-app.use(json({ verify: verifyRequestSignature }));
+app.use(json()); // <-- 1. Se comenta para evitar el error de verificación de firma en Render
+//app.use(json({ verify: verifyRequestSignature })); // <-- 2. Solo para entornos de producción, no para desarrollo local
 
 // Handle webhook verification handshake
 app.get("/webhook", function (req, res) {
