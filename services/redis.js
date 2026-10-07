@@ -11,7 +11,10 @@ const redis = require('redis');
 const config = require('./config');
 
 const client = redis.createClient({
-  url: config.redisUrl, // <-- 1. Se añade para que la URL de Redis se lea desde la variable de entorno REDIS_URL
+  socket: {
+    host: config.redisHost,
+    port: config.redisPort,
+  },
 });
 
 client.on('error', (err) => {
