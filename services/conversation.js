@@ -122,13 +122,23 @@ module.exports = class Conversation {
         await markMessageForFollowUp(ltoResponse.messages[0].id);
         break;
       default:
-        sendTryOutDemoMessage(
+        await sendTryOutDemoMessage(
           message.id,
           senderPhoneNumberId,
           message.senderPhoneNumber,
           constants.APP_DEFAULT_MESSAGE
         );
         break;
+        /*console.log(`[JASPER-BOT] Texto plano libre detectado de: ${message.senderPhoneNumber}. Respondiendo...`);
+        
+        // Llamamos a nuestra nueva función enviando un texto plano seguro y directo
+        await GraphApi.sendSimpleTextMessage(
+          message.id,
+          senderPhoneNumberId,
+          message.senderPhoneNumber,
+          "¡Hola, chamo! Recibí tu mensaje de prueba con éxito en la app de Jasper. Tu sistema en Render ya está respondiendo sin trabas. 🚀"
+        );
+        break;*/
     }
   }
 
