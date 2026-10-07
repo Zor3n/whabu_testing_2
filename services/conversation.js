@@ -98,6 +98,7 @@ module.exports = class Conversation {
 
     switch (message.type) {
       case constants.REPLY_INTERACTIVE_MEDIA_ID:
+        console.log(`Tipo de text en ${message.type} (case 1)`);
         let interactiveMediaResponse = await sendInteractiveMediaMessage(
           message.id,
           senderPhoneNumberId,
@@ -122,7 +123,8 @@ module.exports = class Conversation {
         await markMessageForFollowUp(ltoResponse.messages[0].id);
         break;
       default:
-        await sendTryOutDemoMessage(
+        console.log(`Tipo de text en ${message.type} (default)`);
+        sendTryOutDemoMessage(
           message.id,
           senderPhoneNumberId,
           message.senderPhoneNumber,
