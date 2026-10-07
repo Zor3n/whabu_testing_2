@@ -15,7 +15,7 @@ const {
   buildUtilityTemplatePayload,
 } = require("./message-payloads");
 
-const api = new FacebookAdsApi(config.accessToken); 
+const api = new FacebookAdsApi(config.accessToken, config.version); 
 
 module.exports = class GraphApi {
   static async #makeApiCall(messageId, senderPhoneNumberId, requestBody) {
