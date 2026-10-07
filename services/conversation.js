@@ -47,8 +47,7 @@ function sendInteractiveMediaMessage(messageId, senderPhoneNumberId, recipientPh
     {
       templateName: "grocery_delivery_utility",
       locale: "en_US",
-      //imageId: config.groceriesMediaId,
-      imageId: null,
+      imageId: config.groceriesMediaId,
     }
   );
 }
@@ -62,7 +61,7 @@ function sendLimitedTimeOfferMessage(messageId, senderPhoneNumberId, recipientPh
       templateName: "strawberries_limited_offer",
       locale: "en_US",
       imageId: null,
-      //imageId: config.strawberriesMediaId,
+      imageId: config.strawberriesMediaId,
       offerCode: "BERRIES20",
     }
   );
@@ -77,13 +76,9 @@ function sendMediaCarouselMessage(messageId, senderPhoneNumberId, recipientPhone
       templateName: "recipe_media_carousel",
       locale: "en_US",
       imageIds: [
-        null,
-        null,
-      ]
-      /*imageIds: [
         config.sheetPanDinnerMediaId,
         config.saladBowlMediaId,
-      ]*/
+      ]
     }
   );
 }

@@ -32,7 +32,7 @@ function buildUtilityTemplatePayload(options) {
             {
               type: "image",
               image: {
-                id: imageId,
+                link: imageId,
               },
             },
           ],
@@ -69,7 +69,7 @@ function buildLimitedTimeOfferTemplatePayload(options) {
             {
               type: "image",
               image: {
-                id: imageId,
+                link: imageId,
               },
             },
           ],
@@ -131,7 +131,7 @@ function buildMediaCardCarouselPayload(options) {
                   {
                     type: "image",
                     image: {
-                      id: imageId,
+                      link: imageId,
                     },
                   },
                 ],
