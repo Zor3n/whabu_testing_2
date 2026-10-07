@@ -46,9 +46,10 @@ function sendInteractiveMediaMessage(messageId, senderPhoneNumberId, recipientPh
     recipientPhoneNumber,
     {
       //templateName: "grocery_delivery_utility",
-      templateName: "jaspers_market_image_cta_v1", // <-- 1. Se mantiene el nombre del template original
+      templateName: "hello_world", // plantilla de prueba para evitar restricciones de la plantilla original
       locale: "en_US",
-      imageId: config.groceriesMediaId,
+      //imageId: config.groceriesMediaId,
+      imageId: null,
     }
   );
 }
