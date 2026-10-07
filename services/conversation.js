@@ -132,7 +132,7 @@ module.exports = class Conversation {
         console.log(`[JASPER-BOT] Texto plano libre detectado de: ${message.senderPhoneNumber}. Respondiendo...`);
         
         // Llamamos a nuestra nueva función enviando un texto plano seguro y directo
-        await sendSimpleTextMessage(
+        await GraphApi.sendSimpleTextMessage(
           message.id,
           senderPhoneNumberId,
           message.senderPhoneNumber,
