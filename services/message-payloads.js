@@ -136,6 +136,18 @@ function buildMediaCardCarouselPayload(options) {
                   },
                 ],
               },
+              // 🔽 INYECTAMOS EL BOTÓN TIPO URL ESTÁTICO EXIGIDO POR META 🔽
+              {
+                type: "button",
+                sub_type: "url", // Cambiado estrictamente a 'url' porque abre un sitio web
+                index: 0,        // Posición del botón (el primero de la tarjeta)
+                parameters: [
+                  {
+                    type: "text",
+                    text: ""     // Se deja vacío porque la URL en Meta es 100% estática y no dinámica
+                  }
+                ]
+              }
             ],
           })),
         },
