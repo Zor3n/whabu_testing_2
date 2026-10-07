@@ -58,7 +58,7 @@ function sendInteractiveMediaMessage(messageId, senderPhoneNumberId, recipientPh
     senderPhoneNumberId,
     recipientPhoneNumber,
     {
-      templateName: "hello_world", 
+      templateName: "jaspers_market_plain_text_v1", 
       locale: "en_US",
     }
   );
