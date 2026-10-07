@@ -16,7 +16,8 @@ const ENV_VARS = [
   "APP_SECRET",
   "VERIFY_TOKEN",
   "REDIS_HOST",
-  "REDIS_PORT"
+  "REDIS_PORT",
+  "PHONE_NUMBER_ID" // <-- 1. Añadida a las variables obligatorias
 ];
 
 const MEDIA_ID_ENV_VARS = [
@@ -37,6 +38,7 @@ module.exports = Object.freeze({
   appSecret: process.env.APP_SECRET,
   accessToken: process.env.ACCESS_TOKEN,
   verifyToken: process.env.VERIFY_TOKEN,
+  phoneNumberId: process.env.PHONE_NUMBER_ID, // <-- 2. Añadida para que la lea graph-api.js
 
   // WhatsApp media uploaded for outbound templates
   groceriesMediaId: getMediaId("GROCERIES_MEDIA_ID"),

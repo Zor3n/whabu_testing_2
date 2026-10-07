@@ -15,11 +15,16 @@ const {
   buildUtilityTemplatePayload,
 } = require("./message-payloads");
 
-const api = new FacebookAdsApi(config.accessToken);
+const api = new FacebookAdsApi(config.accessToken); 
 
 module.exports = class GraphApi {
   static async #makeApiCall(messageId, senderPhoneNumberId, requestBody) {
     try {
+      // TRUCO: Si el simulador de Meta manda el ID falso, usamos tu variable real de Render
+      const activePhoneId = senderPhoneNumberId === "123456123" || !senderPhoneNumberId
+        ? process.env.PHONE_NUMBER_ID 
+        : senderPhoneNumberId;
+
       // Mark as read and send typing indicator
       if (messageId) {
         const typingBody = {
@@ -33,7 +38,7 @@ module.exports = class GraphApi {
 
         await api.call(
           'POST',
-          [`${senderPhoneNumberId}`, 'messages'],
+          [`${activePhoneId}`, 'messages'],
           typingBody
         );
       }
@@ -41,7 +46,7 @@ module.exports = class GraphApi {
 
       const response = await api.call(
         'POST',
-        [`${senderPhoneNumberId}`, 'messages'],
+        [`${activePhoneId}`, 'messages'],
         requestBody
       );
       console.log('API call successful:', response);
