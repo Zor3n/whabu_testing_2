@@ -13,6 +13,7 @@ const {
   buildLimitedTimeOfferTemplatePayload,
   buildMediaCardCarouselPayload,
   buildUtilityTemplatePayload,
+  buildSimpleTemplatePayload, // <-- La agregamos aquí
 } = require("./message-payloads");
 
 const api = new FacebookAdsApi(config.accessToken, config.version); 
@@ -117,19 +118,14 @@ module.exports = class GraphApi {
     return this.#makeApiCall(messageId, senderPhoneNumberId, requestBody);
   }
 
-  // NUEVO MÉTODO IMPLEMENTADO PARA ENVIAR TEXTO PLANO SEGURO
-  /*static async sendSimpleTextMessage(messageId, senderPhoneNumberId, recipientPhoneNumber, textBody) {
-    const requestBody = {
-      messaging_product: "whatsapp",
-      recipient_type: "individual",
-      to: recipientPhoneNumber,
-      type: "text",
-      text: {
-        body: textBody
-      }
-    };
+  // NUEVO MÉTODO PARA ENVIAR LA PLANTILLA SIMPLE
+  static async messageWithSimpleTemplate(messageId, senderPhoneNumberId, recipientPhoneNumber, options) {
+    const requestBody = buildSimpleTemplatePayload({
+      recipientPhoneNumber,
+      ...options,
+    });
 
     return this.#makeApiCall(messageId, senderPhoneNumberId, requestBody);
-  }*/
+  }
 
 };

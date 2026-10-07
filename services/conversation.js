@@ -40,7 +40,7 @@ function sendTryOutDemoMessage(messageId, senderPhoneNumberId, recipientPhoneNum
 }
 
 function sendInteractiveMediaMessage(messageId, senderPhoneNumberId, recipientPhoneNumber) {
-  return GraphApi.messageWithUtilityTemplate(
+  /*return GraphApi.messageWithUtilityTemplate(
     messageId,
     senderPhoneNumberId,
     recipientPhoneNumber,
@@ -50,6 +50,16 @@ function sendInteractiveMediaMessage(messageId, senderPhoneNumberId, recipientPh
       locale: "en_US",
       //imageId: config.groceriesMediaId,
       imageId: null,
+    }
+  );*/
+  // Llamamos al nuevo método plano que acabamos de crear
+  return GraphApi.messageWithSimpleTemplate(
+    messageId,
+    senderPhoneNumberId,
+    recipientPhoneNumber,
+    {
+      templateName: "hello_world", 
+      locale: "en_US",
     }
   );
 }

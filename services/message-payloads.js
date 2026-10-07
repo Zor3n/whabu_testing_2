@@ -144,8 +144,31 @@ function buildMediaCardCarouselPayload(options) {
   };
 }
 
+// NUEVO CONSTRUCTOR PARA PLANTILLAS SIMPLES SIN PARÁMETROS NI IMÁGENES
+function buildSimpleTemplatePayload(options) {
+  const {
+    recipientPhoneNumber,
+    templateName,
+    locale,
+  } = options;
+
+  return {
+    messaging_product: "whatsapp",
+    recipient_type: "individual",
+    to: recipientPhoneNumber,
+    type: "template",
+    template: {
+      name: templateName,
+      language: {
+        code: locale || "en_US",
+      }
+    },
+  };
+}
+
 module.exports = {
   buildLimitedTimeOfferTemplatePayload,
   buildMediaCardCarouselPayload,
   buildUtilityTemplatePayload,
+  buildSimpleTemplatePayload, // <-- La agregamos aquí
 };
