@@ -166,6 +166,10 @@ function buildMediaCardCarouselPayload(options) {
       },
       components: [
         {
+          type: "body",
+          text: "Check out our latest products and offers!" // Texto de relleno para el cuerpo del mensaje
+        },
+        {
           type: "carousel",
           // Mapeamos dinámicamente cada tarjeta usando un bucle .map
           cards: imageIds.map((imageId, index) => ({
