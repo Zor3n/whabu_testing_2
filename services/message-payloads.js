@@ -169,7 +169,6 @@ function buildMediaCardCarouselPayload(options) {
           type: "body",
           parameters: [
             {
-              type: "text",
               text: "Check out our latest recipes!" // Texto de relleno para el cuerpo del mensaje
             }
           ]
