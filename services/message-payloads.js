@@ -183,10 +183,6 @@ function buildMediaCardCarouselPayload(options) {
                   },
                 ],
               },
-              {
-                type: "body",
-                text: "This is a sample description for the media card. You can customize this text as needed." // Texto de relleno para la descripción de la tarjeta
-              },
               // 2. UN SOLO BOTÓN TIPO URL (Index como String obligatorio)
               {
                 type: "button",
