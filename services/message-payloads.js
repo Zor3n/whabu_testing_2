@@ -167,7 +167,12 @@ function buildMediaCardCarouselPayload(options) {
       components: [
         {
           type: "body",
-          text: "Check out our latest products and offers!" // Texto de relleno para el cuerpo del mensaje
+          parameters: [
+            {
+              type: "text",
+              text: "Check out our latest recipes!" // Texto de relleno para el cuerpo del mensaje
+            }
+          ]
         },
         {
           type: "carousel",
