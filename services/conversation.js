@@ -72,7 +72,8 @@ function sendLimitedTimeOfferMessage(messageId, senderPhoneNumberId, recipientPh
     {
       templateName: "jaspers_market_test_current_promo_v1",
       locale: "en_US",
-      imageId: config.strawberriesMediaId,
+      //imageId: config.strawberriesMediaId,
+      imageId: config.sheetPanDinnerMediaId,
       offerCode: "BERRIES20",
     }
   );

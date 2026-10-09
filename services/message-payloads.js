@@ -32,7 +32,7 @@ function buildUtilityTemplatePayload(options) {
             {
               type: "image",
               image: {
-                link: imageId,
+                id: imageId,
               },
             },
           ],
@@ -69,8 +69,17 @@ function buildLimitedTimeOfferTemplatePayload(options) {
             {
               type: "image",
               image: {
-                link: imageId,
+                id: imageId,
               },
+            },
+          ],
+        },
+        {
+          type: "body",
+          parameters: [
+            {
+              type: "text",
+              text: offerCode,
             },
           ],
         },
@@ -108,52 +117,7 @@ function buildMediaCardCarouselPayload(options) {
     locale,
     imageIds,
   } = options;
-  /*
-  return {
-    messaging_product: "whatsapp",
-    recipient_type: "individual",
-    to: recipientPhoneNumber,
-    type: "template",
-    template: {
-      name: templateName,
-      language: {
-        code: locale,
-      },
-      components: [
-        {
-          type: "carousel",
-          cards: imageIds.map((imageId, index) => ({
-            card_index: index,
-            components: [
-              {
-                type: "header",
-                parameters: [
-                  {
-                    type: "image",
-                    image: {
-                      link: imageId,
-                    },
-                  },
-                ],
-              },
-              // 🔽 INYECTAMOS EL BOTÓN TIPO URL ESTÁTICO EXIGIDO POR META 🔽
-              {
-                type: "button",
-                sub_type: "url", // Cambiado estrictamente a 'url' porque abre un sitio web
-                index: 0,        // Posición del botón (el primero de la tarjeta)
-                parameters: [
-                  {
-                    type: "text",
-                    text: "get_delivery"     // Se deja vacío porque la URL en Meta es 100% estática y no dinámica
-                  }
-                ]
-              }
-            ],
-          })),
-        },
-      ],
-    },
-  };*/
+  
   return {
     messaging_product: "whatsapp",
     recipient_type: "individual",
