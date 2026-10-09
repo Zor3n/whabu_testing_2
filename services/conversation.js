@@ -70,7 +70,7 @@ function sendLimitedTimeOfferMessage(messageId, senderPhoneNumberId, recipientPh
     senderPhoneNumberId,
     recipientPhoneNumber,
     {
-      templateName: "jaspers_market_order_confirmation_v1",
+      templateName: "jaspers_market_test_current_promo_v1",
       locale: "en_US",
       imageId: config.strawberriesMediaId,
       offerCode: "BERRIES20",
@@ -84,7 +84,6 @@ function sendMediaCarouselMessage(messageId, senderPhoneNumberId, recipientPhone
     senderPhoneNumberId,
     recipientPhoneNumber,
     {
-      //templateName: "recipe_media_carousel",
       templateName: "jaspers_market_media_carousel_v1", // <-- 1. Se mantiene el nombre del template original
       locale: "en_US",
       imageIds: [
@@ -121,6 +120,7 @@ module.exports = class Conversation {
         await markMessageForFollowUp(interactiveMediaResponse.messages[0].id);
         break;
       case constants.REPLY_MEDIA_CAROUSEL_ID:
+        console.log(`Tipo de text en ${message.type} (case 2)`);
         let mediaCarouselResponse = await sendMediaCarouselMessage(
           message.id,
           senderPhoneNumberId,
@@ -129,6 +129,7 @@ module.exports = class Conversation {
         await markMessageForFollowUp(mediaCarouselResponse.messages[0].id);
         break;
       case constants.REPLY_OFFER_ID:
+        console.log(`Tipo de text en ${message.type} (case 3)`);
         let ltoResponse = await sendLimitedTimeOfferMessage(
           message.id,
           senderPhoneNumberId,
@@ -145,16 +146,6 @@ module.exports = class Conversation {
           constants.APP_DEFAULT_MESSAGE
         );
         break;
-        /*console.log(`[JASPER-BOT] Texto plano libre detectado de: ${message.senderPhoneNumber}. Respondiendo...`);
-        
-        // Llamamos a nuestra nueva función enviando un texto plano seguro y directo
-        await GraphApi.sendSimpleTextMessage(
-          message.id,
-          senderPhoneNumberId,
-          message.senderPhoneNumber,
-          "¡Hola, chamo! Recibí tu mensaje de prueba con éxito en la app de Jasper. Tu sistema en Render ya está respondiendo sin trabas. 🚀"
-        );
-        break;*/
     }
   }
 

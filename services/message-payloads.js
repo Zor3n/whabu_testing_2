@@ -166,15 +166,6 @@ function buildMediaCardCarouselPayload(options) {
       },
       components: [
         {
-          type: "body",
-          parameters: [
-            {
-              type: "text",
-              text: "Check out our latest recipes!" // Texto de relleno para el cuerpo del mensaje
-            }
-          ]
-        },
-        {
           type: "carousel",
           // Mapeamos dinámicamente cada tarjeta usando un bucle .map
           cards: imageIds.map((imageId, index) => ({
@@ -187,7 +178,7 @@ function buildMediaCardCarouselPayload(options) {
                   {
                     type: "image",
                     image: {
-                      link: imageId, 
+                      id: imageId, 
                     },
                   },
                 ],
@@ -196,13 +187,16 @@ function buildMediaCardCarouselPayload(options) {
               {
                 type: "button",
                 sub_type: "url",
+                index: "0",
+                /*type: "button",
+                sub_type: "url",
                 index: "0", // Al ser el único botón de la tarjeta, su índice es strictly "0"
                 parameters: [
                   {
                     type: "text",
                     text: "get_delivery" // Texto de relleno exigido por Meta para validar el parámetro
                   }
-                ]
+                ]*/
               }
             ],
           })),
