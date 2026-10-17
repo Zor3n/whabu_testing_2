@@ -97,12 +97,13 @@ function sendMediaCarouselMessage(messageId, senderPhoneNumberId, recipientPhone
   );
 }
 
-function sendCTAEntranceMessage(messageId, senderPhoneNumberId, recipientPhoneNumber) {
+// Ahora recibe el parámetro 'messageBody' en lugar de tener el texto fijo
+function sendCTAEntranceMessage(messageId, senderPhoneNumberId, recipientPhoneNumber, messageBody) {
   return GraphApi.sendTextMessage(
     messageId,
     senderPhoneNumberId,
     recipientPhoneNumber,
-    "Por favor escribe a continuación el dato o mensaje que deseas enviar:"
+    messageBody // <--- Aquí usa la variable dinámica
   );
 }
 
@@ -122,20 +123,17 @@ module.exports = class Conversation {
 
     const userPhone = message.senderPhoneNumber;
     const userStateKey = `state:${userPhone}`;
-    console.log(`🔍 Buscando en Redis la clave: ${userStateKey}`);
     const currentState = await Cache.getState(userStateKey); // <-- 1. Obtenemos el estado actual del usuario desde Redis
-    console.log(`🔍 Valor actual en Redis (currentState):`, currentState);
-    console.log(`🔍 Tipo de mensaje recibido (message.type):`, message.type);
-    console.log(`🔍 Texto recibido (message.textBody):`, message.textBody);
 
     // 1. VERIFICAR SI EL USUARIO ESTÁ EN EL ESTADO DE ESPERA
     if (currentState === 'WAITING_FOR_USER_INPUT') {
-      console.log('✅ ¡Entró al IF de espera exitosamente!');
       const userText = message.textBody; 
-
       console.log(`📥 El usuario ${userPhone} escribió: "${userText}"`);
 
-      // 1. Responderle al usuario usando tu función auxiliar de texto
+      // 1. PRIMERO LIMPIAMOS EL ESTADO DE REDIS (Evita bucles si el webhook reintenta)
+      await Cache.remove(userStateKey);
+
+      // 2. ENVIAMOS EL MENSAJE DE CONFIRMACIÓN
       await sendCTAEntranceMessage(
         message.id,
         senderPhoneNumberId,
@@ -143,18 +141,15 @@ module.exports = class Conversation {
         `¡Gracias! He registrado tu mensaje: "${userText}".`
       );
 
-      // 2. Limpiar el estado de Redis para sacarlo del flujo de espera
-      await Cache.remove(userStateKey);
-
-      // 3. Mostrar el menú principal de nuevo
-      sendTryOutDemoMessage(
+      // 3. MOSTRAMOS EL MENÚ PRINCIPAL NUEVAMENTE
+      await sendTryOutDemoMessage(
         undefined,
         senderPhoneNumberId,
         userPhone,
         constants.APP_DEFAULT_MESSAGE
       );
       
-      return; 
+      return; // Detenemos la ejecución aquí para que no baje al switch
     }
 
     switch (message.type) {
@@ -191,7 +186,8 @@ module.exports = class Conversation {
         let ctaEntranceResponse = await sendCTAEntranceMessage(
           message.id,
           senderPhoneNumberId,
-          message.senderPhoneNumber
+          message.senderPhoneNumber,
+          "Por favor escribe a continuación el dato o mensaje que deseas enviar:"
         );
         await Cache.insertState(userStateKey, 'WAITING_FOR_USER_INPUT');
         break;
