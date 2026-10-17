@@ -193,7 +193,7 @@ module.exports = class Conversation {
           senderPhoneNumberId,
           message.senderPhoneNumber
         );
-        await Cache.insert(userStateKey, 'WAITING_FOR_USER_INPUT');
+        await Cache.insertState(userStateKey, 'WAITING_FOR_USER_INPUT');
         break;
       default:
         console.log(`Tipo de text en ${message.type} (default)`);
