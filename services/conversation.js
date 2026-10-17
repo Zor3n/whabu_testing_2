@@ -122,10 +122,15 @@ module.exports = class Conversation {
 
     const userPhone = message.senderPhoneNumber;
     const userStateKey = `state:${userPhone}`;
+    console.log(`🔍 Buscando en Redis la clave: ${userStateKey}`);
     const currentState = await Cache.getState(userStateKey); // <-- 1. Obtenemos el estado actual del usuario desde Redis
+    console.log(`🔍 Valor actual en Redis (currentState):`, currentState);
+    console.log(`🔍 Tipo de mensaje recibido (message.type):`, message.type);
+    console.log(`🔍 Texto recibido (message.textBody):`, message.textBody);
 
     // 1. VERIFICAR SI EL USUARIO ESTÁ EN EL ESTADO DE ESPERA
     if (currentState === 'WAITING_FOR_USER_INPUT') {
+      console.log('✅ ¡Entró al IF de espera exitosamente!');
       const userText = message.textBody; 
 
       console.log(`📥 El usuario ${userPhone} escribió: "${userText}"`);
