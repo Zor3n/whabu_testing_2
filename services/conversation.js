@@ -24,8 +24,10 @@ function sendTryOutDemoMessage(messageId, senderPhoneNumberId, recipientPhoneNum
     messageBody,
     [
       {
-        id: constants.REPLY_INTERACTIVE_MEDIA_ID,
-        title: constants.REPLY_INTERACTIVE_WITH_MEDIA_CTA,
+        //id: constants.REPLY_INTERACTIVE_MEDIA_ID,
+        //title: constants.REPLY_INTERACTIVE_WITH_MEDIA_CTA,
+        id: constants.REPLY_CTA_ENTRANCE_ID,
+        title: constants.REPLY_CTA_ENTRANCE,
       },
       {
         id: constants.REPLY_MEDIA_CAROUSEL_ID,
@@ -95,6 +97,15 @@ function sendMediaCarouselMessage(messageId, senderPhoneNumberId, recipientPhone
   );
 }
 
+function sendCTAEntranceMessage(messageId, senderPhoneNumberId, recipientPhoneNumber) {
+  return GraphApi.sendTextMessage(
+    messageId,
+    senderPhoneNumberId,
+    recipientPhoneNumber,
+    "Por favor escribe a continuación el dato o mensaje que deseas enviar:"
+  );
+}
+
 async function markMessageForFollowUp(messageId) {
   await Cache.insert(messageId);
 }
@@ -108,6 +119,38 @@ module.exports = class Conversation {
   static async handleMessage(senderPhoneNumberId, rawMessage) {
     const message = new Message(rawMessage);
     Attribution.logAttributionEvent(message, senderPhoneNumberId);
+
+    const userPhone = message.senderPhoneNumber;
+    const userStateKey = `state:${userPhone}`;
+    const currentState = await Cache.getState(userStateKey); // <-- 1. Obtenemos el estado actual del usuario desde Redis
+
+    // 1. VERIFICAR SI EL USUARIO ESTÁ EN EL ESTADO DE ESPERA
+    if (currentState === 'WAITING_FOR_USER_INPUT') {
+      const userText = message.textBody; 
+
+      console.log(`📥 El usuario ${userPhone} escribió: "${userText}"`);
+
+      // 1. Responderle al usuario usando tu función auxiliar de texto
+      await sendCTAEntranceMessage(
+        message.id,
+        senderPhoneNumberId,
+        userPhone,
+        `¡Gracias! He registrado tu mensaje: "${userText}".`
+      );
+
+      // 2. Limpiar el estado de Redis para sacarlo del flujo de espera
+      await Cache.remove(userStateKey);
+
+      // 3. Mostrar el menú principal de nuevo
+      sendTryOutDemoMessage(
+        undefined,
+        senderPhoneNumberId,
+        userPhone,
+        constants.APP_DEFAULT_MESSAGE
+      );
+      
+      return; 
+    }
 
     switch (message.type) {
       case constants.REPLY_INTERACTIVE_MEDIA_ID:
@@ -137,6 +180,15 @@ module.exports = class Conversation {
           message.senderPhoneNumber
         );
         await markMessageForFollowUp(ltoResponse.messages[0].id);
+        break;
+      case constants.REPLY_CTA_ENTRANCE_ID:
+        console.log(`Iniciando flujo de espera de entrada de usuario`);
+        let ctaEntranceResponse = await sendCTAEntranceMessage(
+          message.id,
+          senderPhoneNumberId,
+          message.senderPhoneNumber
+        );
+        await Cache.insert(userStateKey, 'WAITING_FOR_USER_INPUT');
         break;
       default:
         console.log(`Tipo de text en ${message.type} (default)`);

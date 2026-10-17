@@ -21,9 +21,11 @@ module.exports = Object.freeze({
   REPLY_INTERACTIVE_WITH_MEDIA_CTA: "Shop online",
   REPLY_MEDIA_CARD_CAROUSEL_CTA: "Get recipe ideas",
   REPLY_OFFER_CTA: "Current promo",
+  REPLY_CTA_ENTRANCE: "Add entrance",
 
   // Reply Button IDs
   REPLY_INTERACTIVE_MEDIA_ID: "reply-interactive-with-media",
   REPLY_MEDIA_CAROUSEL_ID: "reply-media-card-carousel",
-  REPLY_OFFER_ID: "reply-offer"
+  REPLY_OFFER_ID: "reply-offer", 
+  REPLY_CTA_ENTRANCE_ID: "reply-cta-entrance"
 }); 

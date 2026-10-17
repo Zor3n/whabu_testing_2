@@ -54,4 +54,17 @@ module.exports = class Cache {
 
         return resp > 0;
     }
+
+    // --- NUEVOS MÉTODOS PARA EL FLUJO DE ESPERA DE ENTRADA ---
+
+    // Guarda el estado del usuario con un tiempo prudente (ej. 5 minutos = 300 segundos)
+    static async insertState(key, value) {
+        await client.set(key, value);
+        await client.expire(key, 300); // 5 minutos para que el usuario escriba
+    }
+
+    // Obtiene el estado actual del usuario
+    static async getState(key) {
+        return await client.get(key);
+    }
 }

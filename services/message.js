@@ -8,7 +8,7 @@
 "use strict";
 
 module.exports = class Message { 
-  constructor(rawMessage) {
+  /*constructor(rawMessage) {
     this.id = rawMessage.id;
     this.timestamp = rawMessage.timestamp ?? null;
     this.textBody =
@@ -21,6 +21,24 @@ module.exports = class Message {
       this.type = rawMessage.interactive.button_reply.id;
     } else {
       this.type = 'unknown'
+    }
+
+    this.senderPhoneNumber = rawMessage.from;
+  }*/ // Contructor original comentado para mantener la referencia, pero no se usa en el flujo actual
+
+  constructor(rawMessage) {
+    this.id = rawMessage.id;
+    this.timestamp = rawMessage.timestamp ?? null;
+    this.textBody =
+      rawMessage.type === 'text' && typeof rawMessage.text?.body === 'string'
+        ? rawMessage.text.body
+        : null;
+
+    let type = rawMessage.type;
+    if (type === 'interactive') {
+      this.type = rawMessage.interactive.button_reply.id;
+    } else {
+      this.type = type; // <-- Cambiamos 'unknown' por el tipo real ('text', etc.)
     }
 
     this.senderPhoneNumber = rawMessage.from;

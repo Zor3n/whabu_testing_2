@@ -128,4 +128,20 @@ module.exports = class GraphApi {
     return this.#makeApiCall(messageId, senderPhoneNumberId, requestBody);
   }
 
+  // NUEVO MÉTODO PARA ENVIAR MENSAJES DE TEXTO PLANO (IDEAL PARA PEDIR ENTRADAS)
+  static async sendTextMessage(messageId, senderPhoneNumberId, recipientPhoneNumber, messageText) {
+    const requestBody = {
+      messaging_product: "whatsapp",
+      recipient_type: "individual",
+      to: recipientPhoneNumber,
+      type: "text",
+      text: {
+        preview_url: false,
+        body: messageText
+      }
+    };
+
+    return this.#makeApiCall(messageId, senderPhoneNumberId, requestBody);
+  }
+
 };
