@@ -22,10 +22,22 @@ module.exports = Object.freeze({
   REPLY_MEDIA_CARD_CAROUSEL_CTA: "Get recipe ideas",
   REPLY_OFFER_CTA: "Current promo",
   REPLY_CTA_ENTRANCE: "Add entrance",
+  REPLY_MULTI_STEP_CTA: "Fill out the form",
 
   // Reply Button IDs
   REPLY_INTERACTIVE_MEDIA_ID: "reply-interactive-with-media",
   REPLY_MEDIA_CAROUSEL_ID: "reply-media-card-carousel",
   REPLY_OFFER_ID: "reply-offer", 
-  REPLY_CTA_ENTRANCE_ID: "reply-cta-entrance"
+  REPLY_CTA_ENTRANCE_ID: "reply-cta-entrance",
+  REPLY_MULTI_STEP_CTA_ID: "reply-multi-step",
+
+  // --- NUEVOS CAMPOS DINÁMICOS PARA EL FORMULARIO ---
+  FORM_FIELDS: [
+    { key: 'nombre', prompt: 'Por favor, escribe tu **Nombre**:' },
+    { key: 'apellido', prompt: 'Ahora, por favor escribe tu **Apellido**:' },
+    { key: 'edad', prompt: 'Finalmente, ¿cuál es tu **Edad**?' }
+  ],
+
+  CONFIRM_YES_ID: 'confirm_form_yes',
+  CONFIRM_NO_ID: 'confirm_form_no',
 }); 

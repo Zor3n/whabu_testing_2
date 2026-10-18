@@ -34,8 +34,10 @@ function sendTryOutDemoMessage(messageId, senderPhoneNumberId, recipientPhoneNum
         title: constants.REPLY_MEDIA_CARD_CAROUSEL_CTA,
       },
       {
-        id: constants.REPLY_OFFER_ID,
-        title: constants.REPLY_OFFER_CTA,
+        //id: constants.REPLY_OFFER_ID,
+        //title: constants.REPLY_OFFER_CTA,
+        id: constants.REPLY_MULTI_STEP_CTA_ID,
+        title: constants.REPLY_MULTI_STEP_CTA,
       }
     ]
   );
@@ -111,6 +113,71 @@ async function markMessageForFollowUp(messageId) {
   await Cache.insert(messageId);
 }
 
+// Función para iniciar el cuestionario dinámico
+async function startMultiStepForm(message, senderPhoneNumberId, userPhone, userStateKey) {
+  console.log(`Iniciando cuestionario dinámico paso a paso para ${userPhone}`);
+  
+  const initialSession = {
+    inFlow: true,
+    currentIndex: 0,
+    step: 'QUESTION',
+    data: {}
+  };
+
+  await Cache.insertState(userStateKey, JSON.stringify(initialSession), 300);
+
+  await GraphApi.sendTextMessage(
+    message.id,
+    senderPhoneNumberId,
+    userPhone,
+    constants.FORM_FIELDS[0].prompt
+  );
+}
+
+// Función para procesar el formulario paso a paso y la revisión final
+async function handleMultiStepForm(message, senderPhoneNumberId, userPhone, userStateKey, rawState) {
+  let session = JSON.parse(rawState);
+
+  // Fase de revisión final
+  if (session.step === 'REVIEW') {
+    if (message.type === constants.CONFIRM_YES_ID) {
+      await Cache.remove(userStateKey);
+      await GraphApi.sendTextMessage(message.id, senderPhoneNumberId, userPhone, "¡Datos guardados con éxito en Google Sheets! 🎉");
+      sendTryOutDemoMessage(undefined, senderPhoneNumberId, userPhone, constants.APP_DEFAULT_MESSAGE);
+      return;
+    } else if (message.type === constants.CONFIRM_NO_ID) {
+      await Cache.remove(userStateKey);
+      await GraphApi.sendTextMessage(message.id, senderPhoneNumberId, userPhone, "Formulario cancelado. Empecemos de nuevo.");
+      sendTryOutDemoMessage(undefined, senderPhoneNumberId, userPhone, constants.APP_DEFAULT_MESSAGE);
+      return;
+    }
+  }
+
+  // Respondiendo preguntas del formulario paso a paso
+  const currentFieldIndex = session.currentIndex;
+  const currentField = constants.FORM_FIELDS[currentFieldIndex];
+
+  session.data[currentField.key] = message.textBody;
+  session.currentIndex++;
+
+  if (session.currentIndex < constants.FORM_FIELDS.length) {
+    await Cache.insertState(userStateKey, JSON.stringify(session), 300);
+    
+    const nextPrompt = constants.FORM_FIELDS[session.currentIndex].prompt;
+    await GraphApi.sendTextMessage(message.id, senderPhoneNumberId, userPhone, nextPrompt);
+    return;
+  } else {
+    // Fin de preguntas -> Pasamos a revisión
+    session.step = 'REVIEW';
+    await Cache.insertState(userStateKey, JSON.stringify(session), 300);
+
+    const summary = `Por favor verifica tus datos:\n\n- Nombre: ${session.data.nombre}\n- Apellido: ${session.data.apellido}\n- Edad: ${session.data.edad}\n\n¿Los datos son correctos?`;
+    
+    await GraphApi.sendTextMessage(message.id, senderPhoneNumberId, userPhone, summary);
+    return;
+  }
+}
+
 
 module.exports = class Conversation {
   constructor(phoneNumberId) {
@@ -125,10 +192,12 @@ module.exports = class Conversation {
     const userStateKey = `state:${userPhone}`;
     const currentState = await Cache.getState(userStateKey); // <-- 1. Obtenemos el estado actual del usuario desde Redis
 
-    // 1. VERIFICAR SI EL USUARIO ESTÁ EN EL ESTADO DE ESPERA
+    // ==========================================
+    // FLUJO 1: TU FLUJO ANTIGUO (Texto simple)
+    // ==========================================
     if (currentState === 'WAITING_FOR_USER_INPUT') {
       const userText = message.textBody; 
-      console.log(`📥 El usuario ${userPhone} escribió: "${userText}"`);
+      console.log(`📥 El usuario ${userPhone} escribió en flujo 1: "${userText}"`);
 
       // 1. PRIMERO LIMPIAMOS EL ESTADO DE REDIS (Evita bucles si el webhook reintenta)
       await Cache.remove(userStateKey);
@@ -150,6 +219,22 @@ module.exports = class Conversation {
       );
       
       return; // Detenemos la ejecución aquí para que no baje al switch
+    }
+
+    // ==========================================
+    // FLUJO 2: NUEVO CUESTIONARIO MULTITURNO (Dinámico)
+    // ==========================================
+    // 2. NUEVO FLUJO DINÁMICO (Delegado a la función auxiliar si hay sesión JSON activa)
+    let multiStepSession = null;
+    try {
+      multiStepSession = currentState ? JSON.parse(currentState) : null;
+    } catch (e) {
+      // Si no es un JSON válido, lo ignoramos
+    }
+
+    if (multiStepSession && multiStepSession.inFlow) {
+      await handleMultiStepForm(message, senderPhoneNumberId, userPhone, userStateKey, currentState);
+      return;
     }
 
     switch (message.type) {
@@ -190,6 +275,10 @@ module.exports = class Conversation {
           "Por favor escribe a continuación el dato o mensaje que deseas enviar:"
         );
         await Cache.insertState(userStateKey, 'WAITING_FOR_USER_INPUT');
+        break;
+      // --- NUEVO BOTÓN PARA EL CUESTIONARIO DINÁMICO ---
+      case constants.REPLY_MULTI_STEP_ID:
+        await startMultiStepForm(message, senderPhoneNumberId, userPhone, userStateKey);
         break;
       default:
         console.log(`Tipo de text en ${message.type} (default)`);
