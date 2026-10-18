@@ -136,40 +136,18 @@ async function startMultiStepForm(message, senderPhoneNumberId, userPhone, userS
 
 // Función para enviar el resumen con botones interactivos de Sí / No
 async function sendConfirmationButtons(messageId, senderPhoneNumberId, recipientPhoneNumber, summaryText) {
-  // Construimos la estructura del mensaje interactivo que exige la API de WhatsApp
-  const payload = {
-    messaging_product: "whatsapp",
-    recipient_type: "individual",
-    to: recipientPhoneNumber,
-    type: "interactive",
-    interactive: {
-      type: "button",
-      body: {
-        text: summaryText
-      },
-      action: {
-        buttons: [
-          {
-            type: "reply",
-            reply: {
-              id: constants.CONFIRM_YES_ID,
-              title: "Sí, es correcto"
-            }
-          },
-          {
-            type: "reply",
-            reply: {
-              id: constants.CONFIRM_NO_ID,
-              title: "No, cancelar"
-            }
-          }
-        ]
-      }
-    }
-  };
+  const replyCTAs = [
+    { id: constants.CONFIRM_YES_ID, title: "Sí, es correcto" },
+    { id: constants.CONFIRM_NO_ID, title: "No, cancelar" }
+  ];
 
-  // Usamos el método nativo que envía peticiones a la API de Graph
-  return GraphApi.sendRequest(senderPhoneNumberId, payload);
+  return GraphApi.messageWithInteractiveReply(
+    messageId,
+    senderPhoneNumberId,
+    recipientPhoneNumber,
+    summaryText,
+    replyCTAs
+  );
 }
 
 // Función para procesar el formulario paso a paso y la revisión final
@@ -214,7 +192,14 @@ async function handleMultiStepForm(message, senderPhoneNumberId, userPhone, user
 
     const summary = `Por favor verifica tus datos:\n\n- Nombre: ${session.data.nombre}\n- Apellido: ${session.data.apellido}\n- Edad: ${session.data.edad}\n\n¿Los datos son correctos? Responde "Sí" o "No".`;
     
-    await sendConfirmationButtons(message.id, senderPhoneNumberId, userPhone, summary);
+    try {
+      await sendConfirmationButtons(message.id, senderPhoneNumberId, userPhone, summary);
+    } catch (error) {
+      console.error("Error al enviar botones de confirmación:", error);
+      // Si falla los botones, limpiamos Redis para evitar que quede atascado
+      await Cache.remove(userStateKey);
+      await GraphApi.sendTextMessage(message.id, senderPhoneNumberId, userPhone, summary + "\n\n(Responde 'Sí' o 'No')");
+    }
     return;
   }
 }
