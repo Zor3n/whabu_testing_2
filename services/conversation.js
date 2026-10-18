@@ -134,11 +134,49 @@ async function startMultiStepForm(message, senderPhoneNumberId, userPhone, userS
   );
 }
 
+// Función para enviar el resumen con botones interactivos de Sí / No
+async function sendConfirmationButtons(messageId, senderPhoneNumberId, recipientPhoneNumber, summaryText) {
+  // Construimos la estructura del mensaje interactivo que exige la API de WhatsApp
+  const payload = {
+    messaging_product: "whatsapp",
+    recipient_type: "individual",
+    to: recipientPhoneNumber,
+    type: "interactive",
+    interactive: {
+      type: "button",
+      body: {
+        text: summaryText
+      },
+      action: {
+        buttons: [
+          {
+            type: "reply",
+            reply: {
+              id: constants.CONFIRM_YES_ID,
+              title: "Sí, es correcto"
+            }
+          },
+          {
+            type: "reply",
+            reply: {
+              id: constants.CONFIRM_NO_ID,
+              title: "No, cancelar"
+            }
+          }
+        ]
+      }
+    }
+  };
+
+  // Usamos el método nativo que envía peticiones a la API de Graph
+  return GraphApi.sendRequest(senderPhoneNumberId, payload);
+}
+
 // Función para procesar el formulario paso a paso y la revisión final
 async function handleMultiStepForm(message, senderPhoneNumberId, userPhone, userStateKey, rawState) {
   let session = JSON.parse(rawState);
 
-  // Fase de revisión final
+  // 1. Si ya estamos en la fase de revisión final
   if (session.step === 'REVIEW') {
     if (message.type === constants.CONFIRM_YES_ID) {
       await Cache.remove(userStateKey);
@@ -153,30 +191,34 @@ async function handleMultiStepForm(message, senderPhoneNumberId, userPhone, user
     }
   }
 
-  // Respondiendo preguntas del formulario paso a paso
+  // 2. Guardamos la respuesta del paso actual
   const currentFieldIndex = session.currentIndex;
   const currentField = constants.FORM_FIELDS[currentFieldIndex];
-
   session.data[currentField.key] = message.textBody;
+
+  // 3. Avanzamos el índice
   session.currentIndex++;
 
+  // 4. VERIFICAMOS SI AÚN HAY MÁS PREGUNTAS O SI YA TERMINAMOS
   if (session.currentIndex < constants.FORM_FIELDS.length) {
+    // Aún quedan preguntas, guardamos y mandamos la siguiente
     await Cache.insertState(userStateKey, JSON.stringify(session), 300);
     
     const nextPrompt = constants.FORM_FIELDS[session.currentIndex].prompt;
     await GraphApi.sendTextMessage(message.id, senderPhoneNumberId, userPhone, nextPrompt);
     return;
   } else {
-    // Fin de preguntas -> Pasamos a revisión
+    // ¡Se acabaron las preguntas! Pasamos a la fase de revisión de forma segura
     session.step = 'REVIEW';
     await Cache.insertState(userStateKey, JSON.stringify(session), 300);
 
-    const summary = `Por favor verifica tus datos:\n\n- Nombre: ${session.data.nombre}\n- Apellido: ${session.data.apellido}\n- Edad: ${session.data.edad}\n\n¿Los datos son correctos?`;
+    const summary = `Por favor verifica tus datos:\n\n- Nombre: ${session.data.nombre}\n- Apellido: ${session.data.apellido}\n- Edad: ${session.data.edad}\n\n¿Los datos son correctos? Responde "Sí" o "No".`;
     
-    await GraphApi.sendTextMessage(message.id, senderPhoneNumberId, userPhone, summary);
+    await sendConfirmationButtons(message.id, senderPhoneNumberId, userPhone, summary);
     return;
   }
 }
+
 
 
 module.exports = class Conversation {
