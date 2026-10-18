@@ -277,7 +277,7 @@ module.exports = class Conversation {
         await Cache.insertState(userStateKey, 'WAITING_FOR_USER_INPUT');
         break;
       // --- NUEVO BOTÓN PARA EL CUESTIONARIO DINÁMICO ---
-      case constants.REPLY_MULTI_STEP_ID:
+      case constants.REPLY_MULTI_STEP_CTA_ID:
         await startMultiStepForm(message, senderPhoneNumberId, userPhone, userStateKey);
         break;
       default:
