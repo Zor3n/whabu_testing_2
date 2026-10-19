@@ -1,7 +1,7 @@
 "use strict";
 
 const { google } = require("googleapis");
-const config = require("../config");
+const config = require("./config");
 
 module.exports = class GoogleSheetsService {
   /**
