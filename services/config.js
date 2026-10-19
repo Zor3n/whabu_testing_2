@@ -45,7 +45,7 @@ module.exports = Object.freeze({
   phoneNumberId: process.env.PHONE_NUMBER_ID, // <-- 2. Añadida para que la lea graph-api.js
   version: process.env.VERSION, // <-- 3. Añadida para que la lea graph-api.js
   spreadsheetId: process.env.SPREADSHEET_ID, // <-- 4. Añadida para que la lea graph-api.js
-  privateKey: process.env.PRIVATE_KEY.replace(/\\n/g, '\n'), // <-- 5. Añadida para que la lea graph-api.js
+  privateKey: process.env.PRIVATE_KEY ? process.env.PRIVATE_KEY.replace(/\\n/g, '\n') : undefined, // <-- 5. Añadida para que la lea graph-api.js
   clientEmail: process.env.CLIENT_EMAIL, // <-- 6. Añadida para que la lea graph-api.js
 
   // WhatsApp media uploaded for outbound templates
