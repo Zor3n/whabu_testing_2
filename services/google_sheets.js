@@ -21,9 +21,11 @@ module.exports = class GoogleSheetsService {
 
       const sheets = google.sheets({ version: "v4", auth });
 
-      // 2. Formateamos la fecha/hora actual y la fila de datos
-      const timestamp = new Date().toLocaleString("es-CO", { timeZone: "America/Bogota" });
-      const rowValues = [timestamp, userPhone, nombre, apellido, edad];
+      // Formato de fecha estándar ISO legible que Google Sheets auto-detecta como Fecha/Hora
+      const now = new Date();
+      // Formato YYYY-MM-DD HH:mm:ss
+      const formattedDate = now.toISOString().replace('T', ' ').substring(0, 19);
+      const rowValues = [formattedDate, userPhone, nombre, apellido, edad];
 
       // 3. Insertamos la fila en la primera pestaña ('Sheet1' o 'Hoja 1')
       const response = await sheets.spreadsheets.values.append({
