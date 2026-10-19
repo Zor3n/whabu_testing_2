@@ -28,7 +28,7 @@ module.exports = class GoogleSheetsService {
       // 3. Insertamos la fila en la primera pestaña ('Sheet1' o 'Hoja 1')
       const response = await sheets.spreadsheets.values.append({
         spreadsheetId: config.spreadsheetId,
-        range: "A1", // Google ubicará la primera fila libre automáticamente a partir de A1
+        range: "JasperTestTable!A1", // Google ubicará la primera fila libre automáticamente a partir de A1 en la pestaña(hoja) 'JasperTestTable'
         valueInputOption: "USER_ENTERED",
         requestBody: {
           values: [rowValues],
