@@ -18,7 +18,10 @@ const ENV_VARS = [
   "REDIS_HOST",
   "REDIS_PORT",
   "PHONE_NUMBER_ID", // <-- 1. Añadida a las variables obligatorias
-  "VERSION" // <-- 2. Añadida a las variables obligatorias
+  "VERSION", // <-- 2. Añadida a las variables obligatorias
+  "SPREADSHEET_ID", // <-- 3. Añadida a las variables obligatorias
+  "PRIVATE_KEY", // <-- 4. Añadida a las variables obligatorias
+  "CLIENT_EMAIL", // <-- 5. Añadida a las variables obligatorias
 ];
 
 const MEDIA_ID_ENV_VARS = [
@@ -41,6 +44,9 @@ module.exports = Object.freeze({
   verifyToken: process.env.VERIFY_TOKEN,
   phoneNumberId: process.env.PHONE_NUMBER_ID, // <-- 2. Añadida para que la lea graph-api.js
   version: process.env.VERSION, // <-- 3. Añadida para que la lea graph-api.js
+  spreadsheetId: process.env.SPREADSHEET_ID, // <-- 4. Añadida para que la lea graph-api.js
+  privateKey: process.env.PRIVATE_KEY.replace(/\\n/g, '\n'), // <-- 5. Añadida para que la lea graph-api.js
+  clientEmail: process.env.CLIENT_EMAIL, // <-- 6. Añadida para que la lea graph-api.js
 
   // WhatsApp media uploaded for outbound templates
   groceriesMediaId: getMediaId("GROCERIES_MEDIA_ID"),

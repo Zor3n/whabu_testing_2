@@ -14,6 +14,7 @@ const GraphApi = require('./graph-api');
 const Message = require('./message');
 const Status = require('./status');
 const Cache = require('./redis');
+const GoogleSheetsService = require("./google_sheets");
 
 
 function sendTryOutDemoMessage(messageId, senderPhoneNumberId, recipientPhoneNumber, messageBody) {
@@ -157,6 +158,24 @@ async function handleMultiStepForm(message, senderPhoneNumberId, userPhone, user
   // 1. Si ya estamos en la fase de revisión final
   if (session.step === 'REVIEW') {
     if (message.type === constants.CONFIRM_YES_ID) {
+      //await Cache.remove(userStateKey);
+      //await GraphApi.sendTextMessage(message.id, senderPhoneNumberId, userPhone, "¡Datos guardados con éxito en Google Sheets! 🎉");
+      //sendTryOutDemoMessage(undefined, senderPhoneNumberId, userPhone, constants.APP_DEFAULT_MESSAGE);
+      //return;
+      //---------------------------------------------------
+      // 1. Guardamos en Google Sheets
+      try {
+        await GoogleSheetsService.appendRow({
+          userPhone,
+          nombre: session.data.nombre,
+          apellido: session.data.apellido,
+          edad: session.data.edad
+        });
+      } catch (err) {
+        console.error("No se pudo registrar en Google Sheets:", err);
+      }
+
+      // 2. Limpiamos Redis y confirmamos al usuario
       await Cache.remove(userStateKey);
       await GraphApi.sendTextMessage(message.id, senderPhoneNumberId, userPhone, "¡Datos guardados con éxito en Google Sheets! 🎉");
       sendTryOutDemoMessage(undefined, senderPhoneNumberId, userPhone, constants.APP_DEFAULT_MESSAGE);
